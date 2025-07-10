@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">videoPlayer</string>
+    <string name="video_list">视频列表</string>
+    <string name="video_t1">111</string>
+</resources>
