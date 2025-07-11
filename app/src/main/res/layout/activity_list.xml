@@ -4,11 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:orientation="vertical"
-
     tools:context=".Activities.MainActivity">
-
     <TextView
         android:id="@+id/title_text"
         android:layout_width="match_parent"
@@ -19,11 +17,9 @@
         android:textColor="@android:color/white"
         android:background="@color/green_sea"
          />
-
-
-
-
-
-
-
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/video_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="8dp"/>
 </LinearLayout>

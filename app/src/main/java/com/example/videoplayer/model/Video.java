@@ -1,11 +1,11 @@
 package com.example.videoplayer.model;
 
-public class VideoItem {
+public class Video {
     private int id;
     private String title;
     private String picUrl;
     private String videoUrl;
-    public VideoItem(int id, String title, String picUrl, String videoUrl) {
+    public Video(int id, String title, String picUrl, String videoUrl) {
         this.id = id;
         this.title = title;
         this.picUrl = picUrl;
