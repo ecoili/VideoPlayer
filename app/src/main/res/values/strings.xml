@@ -3,4 +3,7 @@
     <string name="video_list">视频列表</string>
     <string name="video_t1">111</string>
     <string name="btn_back_description">返回</string>
+    <string name="btn_prev_description">上一个视频</string>
+    <string name="btn_pause_play_description">暂停/播放</string>
+    <string name="btn_next_description">下一个视频</string>
 </resources>

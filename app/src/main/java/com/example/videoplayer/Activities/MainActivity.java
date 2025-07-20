@@ -42,20 +42,26 @@ public class MainActivity extends AppCompatActivity {
         videoRecyclerView.addItemDecoration(divider);
 
 //        设置适配器
-        videoAdapter = new VideoAdapter(videoList,video -> {
-            Intent intent = new Intent(MainActivity.this, VideoPlayerActivity.class);
-            intent.putExtra("video_title",video.getTitle());
-            intent.putExtra("video_url",video.getVideoUrl());
-            startActivity(intent);
-        });
-        videoRecyclerView.setAdapter(videoAdapter);
-//        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-//            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-//            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-//            return insets;
+//        videoAdapter = new VideoAdapter(videoList,video -> {
+//            Intent intent = new Intent(MainActivity.this, VideoPlayerActivity.class);
+////            intent.putExtra("video_title",video.getTitle());
+////            intent.putExtra("video_url",video.getVideoUrl());
+//            intent.putExtra("current_position",videoList.indexOf(video));
+//            intent.putParcelableArrayListExtra("video_list",new ArrayList<>(videoList));
+//            startActivity(intent);
 //        });
+        VideoAdapter.OnItemClickListener itemClickListener = video -> {
+            Intent intent = new Intent(MainActivity.this, VideoPlayerActivity.class);
+            intent.putExtra("current_position",videoList.indexOf(video));
+            intent.putParcelableArrayListExtra("video_list",new ArrayList<>(videoList));
+            startActivity(intent);
+        };
+        videoAdapter = new VideoAdapter(videoList,itemClickListener);
+        videoRecyclerView.setAdapter(videoAdapter);
+        
+
     }
-//    链接协议必须为https。http不行
+//    链接协议必须为https,http不行
 //    private void addVideos(){
 //        videoList.add(new Video(1,"关键词","https://i0.hdslb.com/bfs/archive/42ce53049fde1c7f48ac98547ff2ebf355e39bb8.jpg","https://www.bilibili.com/video/BV1AC4mePEyF/?spm_id_from=333.337.search-card.all.click&vd_source=12b62d7e9d8201d4051074379e184ac2"));
 //        videoList.add(new Video(2,"你我","https://i0.hdslb.com/bfs/archive/953763044032117fda771f65d77b6a09c57588c6.jpg","https://www.bilibili.com/video/BV1q8411S7KJ/?spm_id_from=333.337.search-card.all.click&vd_source=12b62d7e9d8201d4051074379e184ac2"));

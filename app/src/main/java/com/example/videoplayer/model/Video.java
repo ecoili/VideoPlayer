@@ -1,6 +1,11 @@
 package com.example.videoplayer.model;
 
-public class Video {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
+
+public class Video implements Parcelable {
     private int id;
     private String title;
     private String picUrl;
@@ -11,7 +16,24 @@ public class Video {
         this.picUrl = picUrl;
         this.videoUrl = videoUrl;
     }
+    protected Video(Parcel in){
+        id = in.readInt();
+        title = in.readString();
+        picUrl = in.readString();
+        videoUrl = in.readString();
+    }
 
+    public static final Creator<Video> CREATOR = new Creator<Video>() {
+        @Override
+        public Video createFromParcel(Parcel parcel) {
+            return new Video(parcel);
+        }
+
+        @Override
+        public Video[] newArray(int i) {
+            return new Video[i];
+        }
+    };
     public int getId() {
         return id;
     }
@@ -26,5 +48,18 @@ public class Video {
 
     public String getVideoUrl() {
         return videoUrl;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel parcel, int i) {
+        parcel.writeInt(id);
+        parcel.writeString(title);
+        parcel.writeString(videoUrl);
+        parcel.writeString(picUrl);
     }
 }
