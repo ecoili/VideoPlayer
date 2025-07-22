@@ -17,12 +17,23 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.videoplayer.R;
 import com.example.videoplayer.model.Video;
+import com.example.videoplayer.R;
+import com.example.videoplayer.model.Video;
+
+//import com.google.android.exoplayer2.MediaItem;
+import androidx.media3.common.MediaItem;
+import androidx.media3.common.Player;
+import androidx.media3.exoplayer.ExoPlayer;
+import androidx.media3.ui.PlayerView;
 
 import java.util.List;
+import java.util.Map;
 
 
 public class VideoPlayerActivity extends AppCompatActivity{
     private VideoView videoView;
+    private PlayerView playerView;
+    private ExoPlayer exoPlayer;
     private ImageButton btnBack,btnPrev,btnPause,btnNext;
     private SeekBar seekBar;
     private TextView tvTitle;
@@ -38,14 +49,16 @@ public class VideoPlayerActivity extends AppCompatActivity{
         setContentView(R.layout.activity_video_play);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         initViews();
+        initializePlayer();
         currentPosition = getIntent().getIntExtra("current_position",0);
         videoList = getIntent().getParcelableArrayListExtra("video_list");
         setupVideoPlayer(videoList.get(currentPosition).getVideoUrl());
         tvTitle.setText(videoList.get(currentPosition).getTitle());
         setupSpeedSpinner();
+        setupButtonListeners();
     }
     private void initViews(){
-        videoView = findViewById(R.id.video);
+        playerView = findViewById(R.id.player_view);
         btnBack = findViewById(R.id.btn_back);
         tvTitle = findViewById(R.id.tv_title);
         btnPause = findViewById(R.id.btn_pause);
@@ -54,9 +67,23 @@ public class VideoPlayerActivity extends AppCompatActivity{
         seekBar = findViewById(R.id.seek_bar);
         spinnerSpeed = findViewById(R.id.speed_ctl);
     }
+    private void initializePlayer(){
+        exoPlayer = new ExoPlayer.Builder(this).build();
+        playerView.setPlayer(exoPlayer);
+
+        exoPlayer.addListener(new Player.Listener() {
+            @Override
+            public void onPlaybackStateChanged(int state) {
+                if (state == Player.STATE_ENDED) {
+                    playNextVideo();
+                }
+            }
+        });
+
+    }
     private void setupSpeedSpinner(){
         String[] speeds = {"0.5x","1.0x","1.5x","2.0x"};
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item,speeds);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerSpeed.setAdapter(adapter);
         spinnerSpeed.setSelection(1);
@@ -70,9 +97,7 @@ public class VideoPlayerActivity extends AppCompatActivity{
                         case 2: speed = 1.5f; break;
                         case 3: speed = 2.0f; break;
                     }
-                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-//                        videoView.setPlaybackparams()
-                    }
+                    exoPlayer.setPlaybackSpeed(speed);
             }
 
             @Override
@@ -82,56 +107,71 @@ public class VideoPlayerActivity extends AppCompatActivity{
         });
 
     }
-    private void setupVideoPlayer(String videoUrl){
-        videoView.setVideoPath(videoUrl);
-        videoView.setOnPreparedListener(mediaPlayer -> {
-            mediaPlayer.start();
-            isPlaying = true;
-            btnPause.setImageResource(R.drawable.ic_play);
-            int duration = mediaPlayer.getDuration();
-            seekBar.setMax(duration);
-            updateSeekBar();
-        });
-        videoView.setOnCompletionListener(mediaPlayer -> {
-            playNextVideo();
-        });
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                if(b) videoView.seekTo(i);
-            }
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                handler.removeCallbacks(updateSeekBarRunnable);
-            }
+//    private void setupVideoPlayer(String videoUrl){
+//        videoView.setVideoPath(videoUrl);
+//        videoView.setOnPreparedListener(mediaPlayer -> {
+//            mediaPlayer.start();
+//            isPlaying = true;
+//            btnPause.setImageResource(R.drawable.ic_play);
+//            int duration = mediaPlayer.getDuration();
+//            seekBar.setMax(duration);
+//            updateSeekBar();
+//        });
+//        videoView.setOnCompletionListener(mediaPlayer -> {
+//            playNextVideo();
+//        });
+//        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+//            @Override
+//            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+//                if(b) videoView.seekTo(i);
+//            }
+//            @Override
+//            public void onStartTrackingTouch(SeekBar seekBar) {
+//                handler.removeCallbacks(updateSeekBarRunnable);
+//            }
+//
+//            @Override
+//            public void onStopTrackingTouch(SeekBar seekBar) {
+//                handler.postDelayed(updateSeekBarRunnable,1000);
+//            }
+//
+//    });
+//    }
 
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                handler.postDelayed(updateSeekBarRunnable,1000);
-            }
+    private void setupVideoPlayer(String videoUrl) {
+        MediaItem mediaItem = MediaItem.fromUri(videoUrl);
+        exoPlayer.setMediaItem(mediaItem);
+        exoPlayer.prepare();
+        exoPlayer.play();
 
-    });
+        seekBar.setMax((int) exoPlayer.getDuration());
+        updateSeekBar();
     }
     private void togglePlayPause(){
-        if(isPlaying){
-            videoView.pause();
-            btnPause.setImageResource(R.drawable.ic_play);
-        }
-        else {
-            videoView.pause();
+        if(exoPlayer.isPlaying()){
+            exoPlayer.pause();
             btnPause.setImageResource(R.drawable.ic_pause);
         }
-        isPlaying = !isPlaying;
+        else {
+            exoPlayer.play();
+            btnPause.setImageResource(R.drawable.ic_play);
+        }
+//        isPlaying = !isPlaying;
     }
     private void playVideoAtPosition(int position){
         if(position >=0 && position < videoList.size()){
             currentPosition = position;
             Video video = videoList.get(position);
             tvTitle.setText(video.getTitle());
-            videoView.setVideoPath(video.getVideoUrl());
-            videoView.start();
-            isPlaying = true;
+//            videoView.setVideoPath(video.getVideoUrl());
+//            videoView.start();
+//            isPlaying = true;
+            MediaItem mediaItem = MediaItem.fromUri(video.getVideoUrl());
+            exoPlayer.setMediaItem(mediaItem);
+            exoPlayer.prepare();
+            exoPlayer.play();
             btnPause.setImageResource(R.drawable.ic_play);
+            seekBar.setMax((int) exoPlayer.getDuration());
         }
     }
     private void playPrevVideo(){
@@ -153,24 +193,22 @@ public class VideoPlayerActivity extends AppCompatActivity{
         btnBack.setOnClickListener(view -> finish());
     }
     private void updateSeekBar(){
-        if(isPlaying){
-            int currentProgress = videoView.getCurrentPosition();
+        if(exoPlayer != null){
+            int currentProgress = (int)exoPlayer.getCurrentPosition();
             seekBar.setProgress(currentProgress);
         }
         handler.postDelayed(updateSeekBarRunnable,1000);
     }
-    private Runnable updateSeekBarRunnable = new Runnable() {
-        @Override
-        public void run() {
-            updateSeekBar();
-        }
-    };
+    private final Runnable updateSeekBarRunnable = () -> updateSeekBar();
 
     @Override
     protected void onDestroy(){
         super.onDestroy();
         handler.removeCallbacks(updateSeekBarRunnable);
-        videoView.suspend();
+        if(exoPlayer != null){
+            exoPlayer.release();
+            exoPlayer = null;
+        }
     }
 
 }

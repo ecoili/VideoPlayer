@@ -38,8 +38,16 @@ dependencies {
     implementation(libs.activity)
     implementation(libs.constraintlayout)
     implementation(libs.glide)
+//    implementation(libs.exoplayer.core)
+//    implementation(libs.exoplayer.ui)
+//    implementation(libs.exoplayer.mediasession)
+//    implementation(libs.exoplayer.hls)
+    implementation(libs.media3.exoplayer)
+    implementation(libs.media3.ui)
+    implementation(libs.media3.session)
     annotationProcessor(libs.glideCompiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+
 }

@@ -3,11 +3,12 @@
     android:id="@+id/root_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <VideoView
-        android:id="@+id/video"
+    <androidx.media3.ui.PlayerView
+        android:id="@+id/player_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        />
+        android:layout_above="@id/bottom_bar"
+        android:layout_below="@id/controls_layout"/>
     <LinearLayout
         android:id="@+id/controls_layout"
         android:layout_width="match_parent"
